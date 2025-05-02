@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { extractLinks } from "@/lib/utils";
+import { extractLinks, getSubredditPosts } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 const PostContent = ({ post }) => {
   const isImageUrl = /\.(jpg|jpeg|png|gif)$/i.test(post.url);
@@ -19,7 +20,11 @@ const PostContent = ({ post }) => {
   }
   if (post.is_video && post.media?.reddit_video) {
     return (
-      <video controls className="max-w-full my-2 rounded" preload="metadata">
+      <video
+        controls
+        className="max-w-full my-2 rounded"
+        preload="metadata"
+        autoPlay>
         <source src={post.media.reddit_video.fallback_url} type="video/mp4" />
         Your browser does not support the video tag.
         <a
@@ -59,14 +64,10 @@ const PostContent = ({ post }) => {
     );
   }
   if (post.selftext) {
-    const previewText =
-      post.selftext.length > 300
-        ? post.selftext.substring(0, 300) + "..."
-        : post.selftext;
     return (
-      <p className="text-sm text-gray-300 my-2 whitespace-pre-wrap">
-        {previewText}
-      </p>
+      <div className="text-sm text-gray-300 my-2 markdown-content">
+        <ReactMarkdown>{post.selftext}</ReactMarkdown>
+      </div>
     );
   }
   if (post.post_hint === "link" && !isImageUrl) {
@@ -124,18 +125,7 @@ const Sidebar = ({ subredditName, onClose }) => {
       setError(null);
       setPosts([]);
       try {
-        const response = await fetch(
-          `/api/subreddit/posts?name=${encodeURIComponent(
-            subredditName
-          )}&limit=50`
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(
-            errorData.error || `Failed to fetch posts (${response.status})`
-          );
-        }
-        const data = await response.json();
+        const data = await getSubredditPosts(subredditName, 50);
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);
@@ -155,7 +145,7 @@ const Sidebar = ({ subredditName, onClose }) => {
   }
 
   return (
-    <div className="fixed top-0 right-0 w-full md:w-1/3 lg:w-1/4 h-full bg-gray-800 shadow-lg z-20 overflow-y-auto p-4 transform transition-transform translate-x-0 flex flex-col">
+    <div className="fixed top-0 right-0 w-full md:w-2/4 lg:w-2/5 h-full bg-gray-800 shadow-lg z-20 overflow-y-auto p-4 transform transition-transform translate-x-0 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-white">r/{subredditName}</h2>
         <button

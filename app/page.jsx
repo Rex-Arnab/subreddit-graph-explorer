@@ -3,6 +3,7 @@
 import React, { useState, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
 import Sidebar from "@/components/Sidebar";
+import { searchRelatedSubreddits } from "@/lib/utils";
 
 // Dynamically import the SubredditGraph component ONLY on the client-side
 const DynamicSubredditGraph = dynamic(
@@ -44,17 +45,7 @@ export default function Home() {
         name: `r/${query.trim()}`
       };
 
-      const response = await fetch(
-        `/api/subreddit/related?q=${encodeURIComponent(query)}&limit=20`
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error ||
-            `Failed to fetch related subreddits (${response.status})`
-        );
-      }
-      const relatedSubs = await response.json();
+      const relatedSubs = await searchRelatedSubreddits(query, 20);
 
       const nodes = [
         initialNode,
@@ -92,18 +83,7 @@ export default function Home() {
           ? nodeId.substring(2)
           : nodeId;
 
-        const response = await fetch(
-          `/api/subreddit/related?q=${encodeURIComponent(searchName)}&limit=10`
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error(
-            `Failed to expand ${nodeId}: ${errorData.error || response.status}`
-          );
-          setError(`Failed to expand r/${searchName}.`);
-          return null;
-        }
-        const relatedSubs = await response.json();
+        const relatedSubs = await searchRelatedSubreddits(searchName, 10);
 
         const newNodes = relatedSubs
           .filter((sub) => sub.id !== nodeId)
