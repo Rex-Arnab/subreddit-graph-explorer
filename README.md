@@ -1,3 +1,5 @@
+![demo](./demo.webp)
+
 # Subreddit Graph Explorer
 
 A Next.js application that fetches and displays post data from Reddit.
