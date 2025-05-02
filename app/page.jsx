@@ -131,42 +131,77 @@ export default function Home() {
 
   return (
     <main className="flex flex-col h-screen bg-gray-900 text-white overflow-hidden">
-      <div className="p-4 bg-gray-800 shadow-md z-10">
-        <h1 className="text-2xl font-bold mb-3 text-center">
-          Subreddit Graph Explorer
-        </h1>
-        <form onSubmit={handleSearch} className="flex gap-2 justify-center">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Enter subreddit name or keyword (e.g., nextjs, reactjs)"
-            className="px-4 py-2 rounded border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex-grow max-w-lg"
-            required
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold disabled:opacity-50"
-            disabled={isLoading}>
-            {isLoading ? "Searching..." : "Explore"}
-          </button>
-          <label className="flex items-center gap-2 text-sm text-gray-300">
-            <input
-              type="checkbox"
-              checked={allowNsfw}
-              onChange={(e) => setAllowNsfw(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            Allow NSFW content
-          </label>
-        </form>
-        {error && <p className="text-red-400 mt-2 text-center">{error}</p>}
+      <div className="p-4 bg-gray-800 shadow-md z-10 sticky top-0">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-2xl font-bold mb-3 text-center text-white">
+            Subreddit Graph Explorer
+          </h1>
+          <form
+            onSubmit={handleSearch}
+            className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+            <div className="flex-1 w-full sm:w-auto">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search subreddits..."
+                className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div className="flex gap-3 items-center">
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold disabled:opacity-50 transition-colors"
+                disabled={isLoading}>
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Searching...
+                  </span>
+                ) : (
+                  "Explore"
+                )}
+              </button>
+              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={allowNsfw}
+                  onChange={(e) => setAllowNsfw(e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                />
+                <span className="">NSFW</span>
+              </label>
+            </div>
+            {error && (
+              <p className="text-red-400 text-sm mt-2 sm:mt-0 text-center w-full">
+                {error}
+              </p>
+            )}
+          </form>
+        </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="flex flex-1 flex-col sm:flex-row overflow-hidden relative">
         <div
           className={`flex-1 h-full transition-all duration-300 ease-in-out ${
-            selectedSubreddit ? "w-2/3 lg:w-3/4" : "w-full"
+            selectedSubreddit ? "w-full sm:w-2/3 lg:w-3/4" : "w-full"
           }`}>
           <Suspense
             fallback={

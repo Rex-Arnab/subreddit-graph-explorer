@@ -145,29 +145,64 @@ const Sidebar = ({ subredditName, onClose, allowNsfw = false }) => {
   }
 
   return (
-    <div className="fixed top-0 right-0 w-full md:w-2/4 lg:w-2/5 h-full bg-gray-800 shadow-lg z-20 overflow-y-auto p-4 transform transition-transform translate-x-0 flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-white">r/{subredditName}</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white text-2xl"
-          aria-label="Close sidebar">
-          ×
-        </button>
+    <div className="fixed inset-0 sm:left-auto sm:right-0 w-full sm:w-96 h-full bg-gray-800 shadow-xl z-20 overflow-y-auto transform transition-transform duration-300 ease-in-out flex flex-col">
+      <div className="sticky top-0 z-10 bg-gray-800 p-4 border-b border-gray-700">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-white">
+            r/{subredditName}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white text-2xl"
+            aria-label="Close sidebar">
+            ×
+          </button>
+        </div>
       </div>
 
-      {isLoading && <p className="text-gray-400">Loading posts...</p>}
-      {error && <p className="text-red-400">Error: {error}</p>}
-
-      {!isLoading && !error && posts.length === 0 && (
-        <p className="text-gray-400">
-          No posts found for this subreddit (or API error).
-        </p>
+      {isLoading && (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex items-center gap-2 text-gray-400">
+            <svg
+              className="animate-spin h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading posts...
+          </div>
+        </div>
+      )}
+      {error && (
+        <div className="p-4 bg-red-900/20 rounded-lg text-red-400">
+          Error: {error}
+        </div>
       )}
 
-      <div className="space-y-4 flex-grow">
+      {!isLoading && !error && posts.length === 0 && (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-gray-400 text-center">
+            No posts found for this subreddit
+          </p>
+        </div>
+      )}
+
+      <div className="grid gap-4 flex-grow p-4">
         {posts.map((post) => (
-          <div key={post.id} className="bg-gray-700 p-3 rounded-lg shadow">
+          <div
+            key={post.id}
+            className="bg-gray-700/80 hover:bg-gray-700 p-4 rounded-xl shadow-lg transition-colors duration-200">
             <h3 className="text-md font-medium text-white mb-1">
               {post.title}
             </h3>
