@@ -45,8 +45,7 @@ const PostContent = ({ post }) => {
           ref={videoRef}
           controls
           className="max-w-full my-2 rounded"
-          preload="metadata"
-          autoPlay>
+          preload="metadata">
           {!useHls && (
             <source
               src={post.media.reddit_video.fallback_url}
