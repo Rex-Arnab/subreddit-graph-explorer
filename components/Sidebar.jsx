@@ -107,7 +107,7 @@ const PostContent = ({ post }) => {
   );
 };
 
-const Sidebar = ({ subredditName, onClose }) => {
+const Sidebar = ({ subredditName, onClose, allowNsfw = false }) => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -125,7 +125,7 @@ const Sidebar = ({ subredditName, onClose }) => {
       setError(null);
       setPosts([]);
       try {
-        const data = await getSubredditPosts(subredditName, 50);
+        const data = await getSubredditPosts(subredditName, 50, allowNsfw);
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);

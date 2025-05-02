@@ -28,6 +28,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [selectedSubreddit, setSelectedSubreddit] = useState(null);
   const [searchedNodeId, setSearchedNodeId] = useState(null);
+  const [allowNsfw, setAllowNsfw] = useState(false);
 
   const handleSearch = async (event) => {
     if (event) event.preventDefault();
@@ -45,7 +46,7 @@ export default function Home() {
         name: `r/${query.trim()}`
       };
 
-      const relatedSubs = await searchRelatedSubreddits(query, 20);
+      const relatedSubs = await searchRelatedSubreddits(query, 20, allowNsfw);
 
       const nodes = [
         initialNode,
@@ -83,7 +84,11 @@ export default function Home() {
           ? nodeId.substring(2)
           : nodeId;
 
-        const relatedSubs = await searchRelatedSubreddits(searchName, 10);
+        const relatedSubs = await searchRelatedSubreddits(
+          searchName,
+          10,
+          allowNsfw
+        );
 
         const newNodes = relatedSubs
           .filter((sub) => sub.id !== nodeId)
@@ -145,6 +150,15 @@ export default function Home() {
             disabled={isLoading}>
             {isLoading ? "Searching..." : "Explore"}
           </button>
+          <label className="flex items-center gap-2 text-sm text-gray-300">
+            <input
+              type="checkbox"
+              checked={allowNsfw}
+              onChange={(e) => setAllowNsfw(e.target.checked)}
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            Allow NSFW content
+          </label>
         </form>
         {error && <p className="text-red-400 mt-2 text-center">{error}</p>}
       </div>
@@ -170,7 +184,11 @@ export default function Home() {
         </div>
 
         {selectedSubreddit && (
-          <Sidebar subredditName={selectedSubreddit} onClose={closeSidebar} />
+          <Sidebar
+            subredditName={selectedSubreddit}
+            onClose={closeSidebar}
+            allowNsfw={allowNsfw}
+          />
         )}
       </div>
     </main>
