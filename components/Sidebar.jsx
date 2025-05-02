@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { extractLinks, getSubredditPosts } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import Hls from "hls.js";
 
 const PostContent = ({ post }) => {
   const isImageUrl = /\.(jpg|jpeg|png|gif)$/i.test(post.url);
@@ -19,22 +20,49 @@ const PostContent = ({ post }) => {
     );
   }
   if (post.is_video && post.media?.reddit_video) {
+    const videoRef = useRef(null);
+    const [useHls, setUseHls] = useState(false);
+
+    useEffect(() => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      if (Hls.isSupported() && post.media.reddit_video.hls_url) {
+        const hls = new Hls();
+        hls.loadSource(post.media.reddit_video.hls_url);
+        hls.attachMedia(video);
+        setUseHls(true);
+
+        return () => {
+          hls.destroy();
+        };
+      }
+    }, [post.media.reddit_video.hls_url]);
+
     return (
-      <video
-        controls
-        className="max-w-full my-2 rounded"
-        preload="metadata"
-        autoPlay>
-        <source src={post.media.reddit_video.fallback_url} type="video/mp4" />
-        Your browser does not support the video tag.
+      <div className="relative">
+        <video
+          ref={videoRef}
+          controls
+          className="max-w-full my-2 rounded"
+          preload="metadata"
+          autoPlay>
+          {!useHls && (
+            <source
+              src={post.media.reddit_video.fallback_url}
+              type="video/mp4"
+            />
+          )}
+          Your browser does not support the video tag.
+        </video>
         <a
           href={post.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-400 hover:underline">
+          className="text-blue-400 hover:underline text-sm block mt-1">
           View Video on Reddit
         </a>
-      </video>
+      </div>
     );
   }
   if (post.post_hint === "rich:video" && post.secure_media_embed?.content) {
