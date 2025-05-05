@@ -172,7 +172,7 @@ const Sidebar = ({ subredditName, onClose, allowNsfw = false }) => {
   }
 
   return (
-    <div className="fixed inset-0 sm:left-auto sm:right-0 w-full sm:w-96 h-full bg-gray-800 shadow-xl z-20 overflow-y-auto transform transition-transform duration-300 ease-in-out flex flex-col">
+    <div className="fixed inset-0 sm:left-auto sm:right-0 w-full sm:w-96 h-full bg-gray-800 shadow-xl z-20 overflow-y-auto overflow-x-hidden transform transition-transform duration-300 ease-in-out flex flex-col">
       <div className="sticky top-0 z-10 bg-gray-800 p-4 border-b border-gray-700">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-white">
@@ -229,7 +229,7 @@ const Sidebar = ({ subredditName, onClose, allowNsfw = false }) => {
         {posts.map((post) => (
           <div
             key={post.id}
-            className="bg-gray-700/80 hover:bg-gray-700 p-4 rounded-xl shadow-lg transition-colors duration-200">
+            className="bg-gray-700/80 hover:bg-gray-700 p-4 rounded-xl shadow-lg transition-colors duration-200 max-w-full overflow-hidden">
             <h3 className="text-md font-medium text-white mb-1">
               {post.title}
             </h3>
